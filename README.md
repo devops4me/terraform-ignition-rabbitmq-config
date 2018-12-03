@@ -143,6 +143,14 @@ Terraform tells you that it is using
 
 ---
 
+
+## To troubleshoot
+
+docker ps -a
+journalctl --unit rabbitmq.service
+journalctl --identifier=ignition --all
+
+
 Okay - new readme
 
 ${file("etcd3-systemd.service")}
