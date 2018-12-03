@@ -150,6 +150,10 @@ docker ps -a
 journalctl --unit rabbitmq.service
 journalctl --identifier=ignition --all
 
+cat /etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
+cat /etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf
+
+
 
 Okay - new readme
 
@@ -170,6 +174,8 @@ wget https://raw.githubusercontent.com/devops4me/terraform-aws-rabbitmq-3.7-clus
 
 sudo cp docker.rabbitmq.service /etc/systemd/system/docker.rabbitmq.service
 sudo systemctl start docker.rabbitmq
+
+
 
 
 journalctl --unit docker.rabbitmq.service
