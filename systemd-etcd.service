@@ -1,5 +1,6 @@
 [Unit]
 Description=Sets up the inbuilt CoreOS etcd 3 key value store
+Requires=docker.service
 Requires=coreos-metadata.service
 After=coreos-metadata.service
 
@@ -12,3 +13,4 @@ ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
   --initial-advertise-peer-urls="http://$${COREOS_EC2_IPV4_LOCAL}:2380" \
   --advertise-client-urls="http://$${COREOS_EC2_IPV4_LOCAL}:2379" \
   --discovery="${file_discovery_url}"
+ExecStartPost=/usr/bin/docker run --detach --name rabbitmq --network host --env RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK" devops4me/rabbitmq-3.7
