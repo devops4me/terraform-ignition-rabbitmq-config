@@ -141,18 +141,130 @@ Terraform tells you that it is using
 * provider.template: version = "~> 1.0"
 ```
 
+##### @try using docker.sock like in Jenkins start command IF next gambit does not work
+##### @try using docker.sock like in Jenkins start command IF next gambit does not work
+##### @try using docker.sock like in Jenkins start command IF next gambit does not work
+##### @try using docker.sock like in Jenkins start command IF next gambit does not work
+##### @try using docker.sock like in Jenkins start command IF next gambit does not work
+
+
+##### @todo interpolate in devops4m/<<container-name>>
+##### @todo interpolate in devops4m/<<container-name>>
+##### @todo interpolate in devops4m/<<container-name>>
+##### @todo interpolate in devops4m/<<container-name>>
+##### @todo interpolate in devops4m/<<container-name>>
+
+
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
+
 ---
 
 
-## To troubleshoot
+## Troubleshoot | Information Gathering
 
-docker ps -a
-journalctl --unit rabbitmq.service
-journalctl --identifier=ignition --all
+```bash
+docker ps -a                              # Is our container running?
+journalctl --unit etcd-member.service     # Examine the ETCD 3 service
+journalctl --unit rabbitmq.service        # Examine (say) rabbitmq.service
+journalctl --identifier=ignition --all    # look at the ignition logs
+systemctl list-unit-files                 # Is your service in this list?
+journalctl --unit coreos-metadata.service # Examine the fetched metadata
+journalctl --unit docker.socket           # Did docker start okay?
+journalctl --unit network-online.target   # Did the network come onlie?
+```
+
+
+CONF_SUFFIX=".d/<<filename.conf>>"     # conf suffix is dot d slash filename.conf
+CONF_FILE=<<service-name>>$CONF_SUFFIX # relative file to service configuration file
+cat /etc/systemd/system/$CONF_FILE     # display our configuration file
+
 
 cat /etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
 cat /etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf
 
+
+
+
+
+## Troubleshoot | Service Start Order
+
+Examine the time the rabbitmq service started with logs **`journalctl --identifier=ignition --all`** and look at the logs like **`[started]  enabling unit "rabbitmq.service"`**.
+
+Now find out when docker.service was enabled with the command **`journalctl -u docker.service`** and look for the log **`Started Docker Application Container Engine.`**
+
+    Dec 04 15:13:01 localhost ignition[486]: files: op(8): [started]  enabling unit "rabbitmq.service"
+    Dec 04 15:18:53 ip-10-66-8-115 systemd[1]: Started Docker Application Container Engine.
+
+
+#### Docker Started First!
+
+Our docker dependent service started at *15:13* whilst RabbitMQ which depends on docker **started after it at 15:18**.
+
+Look below at the logs with more context around the above two lines.
+
+### Context Log | journalctl --identifier=ignition --all
+
+Dec 04 15:13:01 localhost ignition[486]: files: op(3): [started]  processing unit "etcd-member.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(3): op(4): [started]  writing systemd drop-in "20-clct-etcd-member.conf" at "etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf"
+Dec 04 15:13:01 localhost ignition[486]: files: op(3): op(4): [finished] writing systemd drop-in "20-clct-etcd-member.conf" at "etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf"
+Dec 04 15:13:01 localhost ignition[486]: files: op(3): [finished] processing unit "etcd-member.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(5): [started]  enabling unit "etcd-member.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(5): [finished] enabling unit "etcd-member.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(6): [started]  processing unit "rabbitmq.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(6): op(7): [started]  writing systemd drop-in "20-clct-rabbitmq-member.conf" at "etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf"
+Dec 04 15:13:01 localhost ignition[486]: files: op(6): op(7): [finished] writing systemd drop-in "20-clct-rabbitmq-member.conf" at "etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf"
+Dec 04 15:13:01 localhost ignition[486]: files: op(6): [finished] processing unit "rabbitmq.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(8): [started]  enabling unit "rabbitmq.service"
+Dec 04 15:13:01 localhost ignition[486]: files: op(8): [finished] enabling unit "rabbitmq.service"
+Dec 04 15:13:01 localhost ignition[486]: files: files passed
+Dec 04 15:13:01 localhost ignition[486]: Ignition finished successfully
+
+
+### Context Log | journalctl -u docker.service
+
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.389072412Z" level=info msg="pickfirstBalancer: HandleSubConnStateChange: 0xc420596fe0, CONNECTING" module=grpc
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.389400734Z" level=info msg="pickfirstBalancer: HandleSubConnStateChange: 0xc420596fe0, READY" module=grpc
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.389471868Z" level=info msg="Loading containers: start."
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.582655184Z" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be used to set a preferred IP address"
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.867088336Z" level=info msg="Loading containers: done."
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.897412579Z" level=info msg="Docker daemon" commit=e68fc7a graphdriver(s)=overlay2 version=18.06.1-ce
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.897564205Z" level=info msg="Daemon has completed initialization"
+Dec 04 15:18:53 ip-10-66-8-115 systemd[1]: Started Docker Application Container Engine.
+Dec 04 15:18:53 ip-10-66-8-115 env[959]: time="2018-12-04T15:18:53.937982101Z" level=info msg="API listen on /var/run/docker.sock"
+
+
+---
+
+
+## Troubleshoot | Wrong Service Name
+
+**`journalctl --unit blahblahblah.service`**
+
+If you look at blahblahblah.service with **`journalctl --unit blahblahblah.service`** you get a lovely little top and tail printout that feels like nothing happened.
+
+
+    -- Logs begin at Tue 2018-12-04 15:12:58 UTC, end at Tue 2018-12-04 16:13:06 UTC. --
+    -- No entries --
+
+**Actually it means the service did not exist or was not found!**
+
+
+---
+
+
+
+
+
+
+
+
+
+---
 
 
 Okay - new readme

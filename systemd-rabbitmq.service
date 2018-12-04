@@ -1,9 +1,8 @@
 [Unit]
 Description=RabbitMQ Node with ETCD Peer Discovery
-After=docker.service
-Requires=docker.service
-Requires=coreos-metadata.service
-After=coreos-metadata.service
+After=network-online.target docker.socket etcd-member.service
+Wants=network-online.target coreos-metadata.service
+Requires=docker.socket etcd-member.service coreos-metadata.service
 
 [Service]
 EnvironmentFile=/run/metadata/coreos
