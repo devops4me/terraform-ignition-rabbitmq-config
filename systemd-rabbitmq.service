@@ -8,3 +8,6 @@ Requires=docker.socket etcd-member.service coreos-metadata.service
 EnvironmentFile=/run/metadata/coreos
 ExecStartPre=/usr/bin/docker pull devops4me/rabbitmq-3.7
 ExecStart=/usr/bin/docker run --detach --name rabbitmq --network host --env RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK" devops4me/rabbitmq-3.7
+
+[Install]
+WantedBy=multi-user.target

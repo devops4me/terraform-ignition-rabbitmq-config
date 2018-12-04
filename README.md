@@ -335,10 +335,11 @@ Every node needs to remote the guest guest user. But ...
 ... but the rabbitmq user need be created only on the first node.
 -------------------------------------------------
 
+```bash
 docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user test test"
 docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags test administrator"
 docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / test ".*" ".*" ".*"'
-
+```
 
 
 
