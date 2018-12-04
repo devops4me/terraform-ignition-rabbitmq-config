@@ -33,7 +33,7 @@ data ignition_systemd_unit rabbitmq
     enabled = "true"
     dropin
     {
-        name    = "20-clct-rabbitmq-member.conf"
+        name    = "20-clct-rabbitmq.conf"
         content = "${ data.template_file.rabbitmq.rendered }"
     }
 }
