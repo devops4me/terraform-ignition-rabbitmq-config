@@ -218,8 +218,24 @@ Dec 04 18:17:12 ip-10-66-28-127 docker[2074]: b2095a365cbf1f6c9290596e2158b758bc
 ```
 
 
+---
 
-## Troubleshoot | Service Start Order
+
+## Troubleshoot | docker.socket rather than docker.service
+
+When you list units in the latest CoreOS build you'll find that **docker.service is disabled**. It has been pushed aside to make way for **docker.socket**.
+
+So if your service executes a **`docker run`** you should use docker.socket in the **`Requires`** and **`After`** fields.
+
+**You risk starting your services in the wrong order.**
+
+This leads us nicely onto the next troubleshooting tip.
+
+
+---
+
+
+## Troubleshoot | Wrong Service Start Order
 
 Examine the time the rabbitmq service started with logs **`journalctl --identifier=ignition --all`** and look at the logs like **`[started]  enabling unit "rabbitmq.service"`**.
 
@@ -280,16 +296,6 @@ If you look at blahblahblah.service with **`journalctl --unit blahblahblah.servi
     -- No entries --
 
 **Actually it means the service did not exist or was not found!**
-
-
----
-
-
-
-
-
-
-
 
 
 ---
