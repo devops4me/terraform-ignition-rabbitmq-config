@@ -30,12 +30,8 @@ data ignition_config rabbitmq
 data ignition_systemd_unit rabbitmq
 {
     name = "rabbitmq.service"
+    content = "${ data.template_file.rabbitmq.rendered }"
     enabled = "true"
-    dropin
-    {
-        name    = "20-clct-rabbitmq.conf"
-        content = "${ data.template_file.rabbitmq.rendered }"
-    }
 }
 
 

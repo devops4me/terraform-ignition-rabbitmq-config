@@ -188,6 +188,34 @@ cat /etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
 cat /etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf
 
 
+## Troubleshoot | Validate your service unit file
+
+If things aren't going as planned one troubleshooting tactic is to **validate your systemd service unit file** using **`systemctl`** and **`journalctl`**.
+
+If the service file is not already on CoreOS machine you SSH in and use wget to download (say from Github) like this.
+
+```bash
+DOWNLOAD_URL=https://raw.githubusercontent.com/devops4me/terraform-ignition-rabbitmq-config/master/systemd-rabbitmq.service
+wget $DOWNLOAD_URL
+sudo cp systemd-rabbitmq.service /etc/systemd/system/rabbitmq.manual.service
+sudo systemctl start rabbitmq.manual
+journalctl --unit rabbitmq.manual
+docker ps -a
+```
+
+Tryout this example which **kicks off RabbitMQ using Docker** and **`docker ps -a`** demonstrates the container in action. Also **`http://<<hosh>>:15672/#/`** should bring up the RabbitMQ welcome page (assuming port 15672 is allowed by the relevant local (or AWS cloud) security group.
+
+Any errors with your service file should show up or if all good you'll get logs like these topp'd and tailed ones.
+
+```
+-- Logs begin at Tue 2018-12-04 17:39:35 UTC, end at Tue 2018-12-04 18:17:12 UTC. --
+Dec 04 18:17:07 ip-10-66-28-127 systemd[1]: Starting RabbitMQ Node with ETCD Peer Discovery...
+Dec 04 18:17:07 ip-10-66-28-127 docker[1956]: Using default tag: latest
+Dec 04 18:17:08 ip-10-66-28-127 docker[1956]: latest: Pulling from devops4me/rabbitmq-3.7
+Dec 04 18:17:08 ip-10-66-28-127 docker[1956]: 4fe2ade4980c: Pulling fs layer
+Dec 04 18:17:12 ip-10-66-28-127 systemd[1]: Started RabbitMQ Node with ETCD Peer Discovery.
+Dec 04 18:17:12 ip-10-66-28-127 docker[2074]: b2095a365cbf1f6c9290596e2158b758bc174d1056c16a7b0f8cb62fc177032f
+```
 
 
 
