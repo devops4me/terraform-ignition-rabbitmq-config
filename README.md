@@ -63,51 +63,46 @@ Your node is configured when you feed the output into the user data field of eit
 
 ---
 
-## Ignition User Data Input Example
 
-Ignition config is in JSON format and is not designed to be human readable. This example demonstrates how the terraform ignition provider reads the systemd unit files and then **transpiles it** to the JSON code below which is passed into the **user data input variable** in this module.
 
-### The Transpiled Ignition Configuration
+## RabbitMQ User through Docker
 
-```json
-{
-   "ignition":{
-      "config":{
 
-      },
-      "timeouts":{
+Using a **`systemd unit file`** like the one below adds RabbitMQ users through the **`docker exec`** command. The **`apollo`** username and **`p455w0rd`** password can be replaced with placeholders for dynamic configuration.
 
-      },
-      "version":"2.1.0"
-   },
-   "networkd":{
 
-   },
-   "passwd":{
+```ini
+[Unit]
+Description=Create first Apollo RabbitMQ administrative user
+After=docker.socket etcd-member.service rabbitmq.service
+Requires=docker.socket etcd-member.service rabbitmq.service
 
-   },
-   "storage":{
+[Service]
+ExecStartPre=/usr/bin/docker exec \
+    --interactive \
+    --tty         \
+    rabbitmq      \
+    rabbitmqctl add_user apollo p455w0rd
 
-   },
-   "systemd":{
-      "units":[
-         {
-            "dropins":[
-               {
-                  "contents":"[Unit]\nDescription=Sets up the inbuilt CoreOS etcd 3 key value store\nRequires=coreos-metadata.service\nAfter=coreos-metadata.service\n\n[Service]\nEnvironmentFile=/run/metadata/coreos\nExecStart=\nExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \\\n  --listen-peer-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2380\" \\\n  --listen-client-urls=\"http://0.0.0.0:2379\" \\\n  --initial-advertise-peer-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2380\" \\\n  --advertise-client-urls=\"http://${COREOS_EC2_IPV4_LOCAL}:2379\" \\\n  --discovery=\"https://discovery.etcd.io/93d2817eddad15fe6ba844e292e5c11a\"\n",
-                  "name":"20-clct-etcd-member.conf"
-               }
-            ],
-            "enabled":true,
-            "name":"etcd-member.service"
-         }
-      ]
-   }
-}
+ExecStartPre=/usr/bin/docker exec \
+    --interactive \
+    --tty         \
+    rabbitmq      \
+    rabbitmqctl set_user_tags apollo administrator
+
+ExecStart=/usr/bin/docker exec \
+    --interactive \
+    --tty         \
+    rabbitmq      \
+    rabbitmqctl set_permissions -p / apollo ".*" ".*" ".*"
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 
 ---
+
 
 ## 0 Resources is Expected
 
