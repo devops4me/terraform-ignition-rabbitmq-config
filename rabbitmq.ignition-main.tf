@@ -15,7 +15,8 @@ data ignition_config rabbitmq
     systemd =
     [
         "${data.ignition_systemd_unit.etcd3.id}",
-        "${data.ignition_systemd_unit.rabbitmq.id}"
+        "${data.ignition_systemd_unit.rabbitmq.id}",
+        "${data.ignition_systemd_unit.rmquser.id}"
     ]
 }
 
@@ -42,6 +43,21 @@ data ignition_systemd_unit rabbitmq
  | -- the other ignition configuration blocks in ignition_config
  | --
 */
+data ignition_systemd_unit rmquser
+{
+    name = "rmquser.service"
+    content = "${ data.template_file.rmquser.rendered }"
+    enabled = "true"
+}
+
+
+/*
+ | --
+ | -- This slice of the ignition configuration deals with the
+ | -- systemd service. Once rendered it is then placed alongside
+ | -- the other ignition configuration blocks in ignition_config
+ | --
+*/
 data ignition_systemd_unit etcd3
 {
     name = "etcd-member.service"
@@ -51,6 +67,23 @@ data ignition_systemd_unit etcd3
         name    = "20-clct-etcd-member.conf"
         content = "${ data.template_file.etcd3.rendered }"
     }
+}
+
+
+/*
+ | --
+ | -- This systemd unit file adds a user to the RabbitMQ cluster
+ | -- after roughly 1 minute.
+ | --
+*/
+data template_file rmquser
+{
+    template = "${ file( "${path.module}/systemd-rmq-user.service" ) }"
+
+#### ---->    vars
+#### ---->    {
+#### ---->        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
+#### ---->    }
 }
 
 
@@ -73,7 +106,6 @@ data template_file rabbitmq
 
     vars
     {
-##########        rabbit_cookie = "BCDEFGHIJKLMNOPQRSTUVWXY"
         rabbit_cookie = "${ random_string.rabbit_cookie.result }"
     }
 }

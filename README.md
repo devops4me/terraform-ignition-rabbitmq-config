@@ -144,6 +144,28 @@ Terraform tells you that it is using
 ---
 
 
+etcdctl ls / --recursive
+
+/rmq
+/rmq/cluster_name_1
+/rmq/cluster_name_1/nodes
+/rmq/cluster_name_1/nodes/rabbit@ip-10-66-8-230
+/rmq/cluster_name_1/nodes/rabbit@ip-10-66-22-241
+/rmq/cluster_name_1/nodes/rabbit@ip-10-66-29-146
+/rmq/cluster_name_1/nodes/rabbit@ip-10-66-40-65
+/rmq/cluster_name_1/nodes/rabbit@ip-10-66-6-250
+
+core@ip-10-66-40-65 ~ $ ping ip-10-66-8-230
+PING ip-10-66-8-230.eu-west-2.compute.internal (10.66.8.230) 56(84) bytes of data.
+64 bytes from ip-10-66-8-230.eu-west-2.compute.internal (10.66.8.230): icmp_seq=1 ttl=64 time=0.636 ms
+64 bytes from ip-10-66-8-230.eu-west-2.compute.internal (10.66.8.230): icmp_seq=2 ttl=64 time=0.680 ms
+64 bytes from ip-10-66-8-230.eu-west-2.compute.internal (10.66.8.230): icmp_seq=3 ttl=64 time=0.661 ms
+64 bytes from ip-10-66-8-230.eu-west-2.compute.internal (10.66.8.230): icmp_seq=4 ttl=64 time=0.621 ms
+
+---
+
+
+
 ## Troubleshoot | Information Gathering
 
 Replace the string **`rabbitmq`** with the name of your service in these systemd information gathering commands.
