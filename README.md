@@ -141,27 +141,6 @@ Terraform tells you that it is using
 * provider.template: version = "~> 1.0"
 ```
 
-##### @try using docker.sock like in Jenkins start command IF next gambit does not work
-##### @try using docker.sock like in Jenkins start command IF next gambit does not work
-##### @try using docker.sock like in Jenkins start command IF next gambit does not work
-##### @try using docker.sock like in Jenkins start command IF next gambit does not work
-##### @try using docker.sock like in Jenkins start command IF next gambit does not work
-
-
-##### @todo interpolate in devops4m/<<container-name>>
-##### @todo interpolate in devops4m/<<container-name>>
-##### @todo interpolate in devops4m/<<container-name>>
-##### @todo interpolate in devops4m/<<container-name>>
-##### @todo interpolate in devops4m/<<container-name>>
-
-
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-##### @todo put RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK in environment with systemd which gives it to docker container
-
 ---
 
 
@@ -176,12 +155,12 @@ systemctl list-unit-files                 # Is your service in this list?
 journalctl --unit coreos-metadata.service # Examine the fetched metadata
 journalctl --unit docker.socket           # Did docker start okay?
 journalctl --unit network-online.target   # Did the network come onlie?
+cat /etc/systemd/system/<<name>>.service  # Print the systemd unit file
+systemctl cat rabbitmq                    # Print the systemd unit file
+systemctl status rabbitmq                 # Is service enabled or what?
+docker logs rabbitmq                      # Logs please (if docker run)
 ```
 
-
-CONF_SUFFIX=".d/<<filename.conf>>"     # conf suffix is dot d slash filename.conf
-CONF_FILE=<<service-name>>$CONF_SUFFIX # relative file to service configuration file
-cat /etc/systemd/system/$CONF_FILE     # display our configuration file
 
 
 cat /etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
@@ -301,64 +280,15 @@ If you look at blahblahblah.service with **`journalctl --unit blahblahblah.servi
 ---
 
 
-Okay - new readme
-
-${file("etcd3-systemd.service")}
-
--------------------------------------------------
-Every node runs this rabbitmq start command.
--------------------------------------------------
-
-docker run -d --name rabbitmq --network host --restart=on-failure:7 --env RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJ" devops4me/rabbitmq-3.7
-
-
-Removed the -d (daemon)
-docker run --name rabbitmq --network host --restart=on-failure:5 --env RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJ" devops4me/rabbitmq-3.7
-
-
-wget https://raw.githubusercontent.com/devops4me/terraform-aws-rabbitmq-3.7-cluster/master/docker.rabbitmq.service
-
-sudo cp docker.rabbitmq.service /etc/systemd/system/docker.rabbitmq.service
-sudo systemctl start docker.rabbitmq
-
-
-
-
-journalctl --unit docker.rabbitmq.service
-systemctl cat docker.rabbitmq
-docker logs -f rabbitmq
-
-
-systemctl status docker.rabbitmq
-
-@todo - get terraform to automatically add the erlang cookie
-
--------------------------------------------------
-Every node needs to remote the guest guest user. But ...
--------------------------------------------------
-
--------------------------------------------------
-... but the rabbitmq user need be created only on the first node.
--------------------------------------------------
-
 ```bash
-docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user test test"
-docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags test administrator"
-docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / test ".*" ".*" ".*"'
+docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloakora password123"
+docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags apolloakora administrator"
+docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / apolloakora ".*" ".*" ".*"'
 ```
-
-
-
---------------------------------------------------------------
-Look for config transpiler to engineer and reverse engineer
---------------------------------------------------------------
-
-
 
 -------------------------------------------------
 Think abou the below ports
 -------------------------------------------------
-
 
     4369: epmd, a peer discovery service used by RabbitMQ nodes and CLI tools
     5672, 5671: used by AMQP 0-9-1 and 1.0 clients without and with TLS

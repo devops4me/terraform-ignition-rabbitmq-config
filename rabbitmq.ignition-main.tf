@@ -71,14 +71,30 @@ data template_file rabbitmq
 {
     template = "${ file( "${path.module}/systemd-rabbitmq.service" ) }"
 
-#### @todo - add the erlang cookie thing here
-#### @todo - add the erlang cookie thing here
-#### @todo - add the erlang cookie thing here
-#### @todo - add the erlang cookie thing here
-##### ===>    vars
-##### ===>    {
-##### ===>        file_discovery_url = "${ data.external.url.result[ "etcd_discovery_url" ] }"
-##### ===>    }
+    vars
+    {
+        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
+    }
+}
+
+
+/*
+ | --
+ | -- To join a cluster RabbitMQ nodes ask each other whether
+ | -- their "erlang cookies" match and they will because the
+ | -- value is drawn from the result of this resource.
+ | --
+ | -- We have configured the value of this cookie to
+ | --
+ | --   a) contain 16 alphanumeric characters
+ | --   b) no special characters (nor spaces)
+ | --   c) employ both uppercase and lowercase
+ | --
+*/
+resource random_string rabbit_cookie
+{
+    length = 16
+    special = false
 }
 
 

@@ -5,12 +5,15 @@ After=docker.socket etcd-member.service
 Requires=docker.socket etcd-member.service
 
 [Service]
+Environment="RABBITMQ_ERLANG_COOKIE=${rabbit_cookie}"
 ExecStart=/usr/bin/docker run \
     --detach        \
     --name rabbitmq \
     --network host  \
-    --env RABBITMQ_ERLANG_COOKIE="ABCDEFGHIJK" \
     devops4me/rabbitmq-3.7
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloakora password123"
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags apolloakora administrator"
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / apolloakora ".*" ".*" ".*"'
 
 [Install]
 WantedBy=multi-user.target
