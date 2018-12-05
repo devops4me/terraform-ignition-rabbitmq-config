@@ -18,7 +18,7 @@ ExecStart=/usr/bin/docker run \
     --detach        \
     --name rabbitmq \
     --network host  \
-    --env RABBITMQ_ERLANG_COOKIE="${rabbit_cookie}" \
+    --env RABBITMQ_ERLANG_COOKIE="${erlang_cookie}" \
     --env RABBITMQ_DEFAULT_USER="apollo"   \
     --env RABBITMQ_DEFAULT_PASS="p455w0rd" \
     devops4me/rabbitmq-3.7

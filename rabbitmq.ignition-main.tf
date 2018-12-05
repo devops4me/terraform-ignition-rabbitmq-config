@@ -73,27 +73,10 @@ data template_file rabbitmq
 
     vars
     {
-        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
+        erlang_cookie = "${ random_string.erlang_cookie.result }"
+        rbmq_username = "${ var.in_rmq_username }"
+        rbmq_password = "${ random_string.password.result }"
     }
-}
-
-
-/*
- | --
- | -- To join a cluster RabbitMQ nodes ask each other whether
- | -- their "erlang cookies" match - and they will because the
- | -- value is drawn from the result of this resource.
- | --
- | -- The cookie will hold 24 (and only 24) upper case letters.
- | --
-*/
-resource random_string rabbit_cookie
-{
-    length  = 24
-    upper   = true
-    lower   = false
-    number  = false
-    special = false
 }
 
 
@@ -114,6 +97,43 @@ data template_file etcd3
     {
         file_discovery_url = "${ data.external.url.result[ "etcd_discovery_url" ] }"
     }
+}
+
+
+/*
+ | --
+ | -- The RabbitMQ user password is generated to contain
+ | -- 24 alphanumeric characters and no specials.
+ | -- For production this password should be ingested by
+ | -- your safe through Terraform's output command.
+ | --
+*/
+resource random_string password
+{
+    length  = 24
+    upper   = true
+    lower   = true
+    number  = true
+    special = false
+}
+
+
+/*
+ | --
+ | -- To join a cluster RabbitMQ nodes ask each other whether
+ | -- their "erlang cookies" match - and they will because the
+ | -- value is drawn from the result of this resource.
+ | --
+ | -- The cookie will hold 24 (and only 24) upper case letters.
+ | --
+*/
+resource random_string erlang_cookie
+{
+    length  = 24
+    upper   = true
+    lower   = false
+    number  = false
+    special = false
 }
 
 
