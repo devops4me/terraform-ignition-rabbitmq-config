@@ -22,5 +22,5 @@ variable in_node_count
 variable in_rmq_username
 {
     description = "Username of the first provisioned RabbitMQ user which defaults to apollo."
-    default     = "apollo"
+    default     = "devops4me"
 }
