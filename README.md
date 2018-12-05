@@ -56,7 +56,7 @@ When each cluster node wakes up, the above ETCD configuration sets up the key-va
 
 ---
 
-### How does RabbitMQ know where ETCD is?
+## How does RabbitMQ know where ETCD is?
 
 Looking above it is not obvious where RabbitMQ is given etcd's host url.
 
