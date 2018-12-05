@@ -73,8 +73,8 @@ data template_file rabbitmq
 
     vars
     {
-        rabbit_cookie = "BCDEFGHIJKLMNOPQRSTUVWXY"
-##########        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
+##########        rabbit_cookie = "BCDEFGHIJKLMNOPQRSTUVWXY"
+        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
     }
 }
 

@@ -291,7 +291,7 @@ A quick glance names the services that have let you down.
 
 
 ```bash
-docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloakora password123"
+docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloakora abc123"
 docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags apolloakora administrator"
 docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / apolloakora ".*" ".*" ".*"'
 ```

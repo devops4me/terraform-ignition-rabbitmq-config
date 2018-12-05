@@ -5,11 +5,11 @@ After=docker.socket etcd-member.service
 Requires=docker.socket etcd-member.service
 
 [Service]
-Environment="RABBITMQ_ERLANG_COOKIE=${rabbit_cookie}"
 ExecStart=/usr/bin/docker run \
     --detach        \
     --name rabbitmq \
     --network host  \
+    --env RABBITMQ_ERLANG_COOKIE="${rabbit_cookie}" \
     devops4me/rabbitmq-3.7
 
 [Install]
