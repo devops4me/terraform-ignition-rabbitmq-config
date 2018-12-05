@@ -10,19 +10,19 @@ ExecStartPre=/usr/bin/docker exec \
     --interactive \
     --tty         \
     rabbitmq      \
-    bash -c "rabbitmqctl add_user apollo p455w0rd"
+    rabbitmqctl add_user apollo p455w0rd
 
 ExecStartPre=/usr/bin/docker exec \
     --interactive \
     --tty         \
     rabbitmq      \
-    bash -c "rabbitmqctl set_user_tags apollo administrator"
+    rabbitmqctl set_user_tags apollo administrator
 
 ExecStart=/usr/bin/docker exec \
     --interactive \
     --tty         \
     rabbitmq      \
-    bash -c 'rabbitmqctl set_permissions -p / apollo ".*" ".*" ".*"'
+    rabbitmqctl set_permissions -p / apollo ".*" ".*" ".*"
 
 [Install]
 WantedBy=multi-user.target

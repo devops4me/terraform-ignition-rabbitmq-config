@@ -16,7 +16,7 @@ data ignition_config rabbitmq
     [
         "${data.ignition_systemd_unit.etcd3.id}",
         "${data.ignition_systemd_unit.rabbitmq.id}",
-        "${data.ignition_systemd_unit.rmquser.id}"
+#############        "${data.ignition_systemd_unit.rmquser.id}"
     ]
 }
 
