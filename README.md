@@ -1,11 +1,40 @@
 
-# etcd | ignition systemd unit configuration
+# RabbitMQ 3.7 Cluster Configuration | ETCD Peer Discovery
 
-This module **converts human manageable systemd unit files** into **machine readable container linux ignition json** that will configure each node of the etcd cluster.
+Deploying an **N node RabbitMQ 3.7 cluster** is extremely simple when you combine a modular Terraform design, an **etcd peer discovery backend** and two **systemd unit files** that are converted to Ignition json.
+
+You can also **swap out a fixed size ec2 instance cluster** and replace it with one that **auto-scales**.
+
+### RabbitMQ SystemD Unit Configuration
+
+```ini
+[Unit]
+Description=RabbitMQ Node with ETCD Peer Discovery
+After=docker.socket etcd-member.service
+Requires=docker.socket etcd-member.service
+
+[Service]
+ExecStart=/usr/bin/docker run \
+    --detach        \
+    --name rabbitmq \
+    --network host  \
+    --env RABBITMQ_ERLANG_COOKIE="${rabbit_cookie}" \
+    --env RABBITMQ_DEFAULT_USER="apollo"   \
+    --env RABBITMQ_DEFAULT_PASS="p455w0rd" \
+    devops4me/rabbitmq-3.7
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Each node will be bootstrapped using **Ignition** to run the **[RabbitMQ 3.7 docker container](https://github.com/devops4me/rabbitmq-3.7/blob/master/Dockerfile)** after CoreOS ETCD 3 has been installed.
+
+You replace the **`apollo`** username and **`p455w0rd`** password, and the **clustering (erlang) cookie**, with placeholders for dynamic configuration.
 
 ---
 
-### etcd systemd unit file
+### Etcd SystemD Unit Configuration
+
 
 ```ini
 [Unit]
@@ -23,46 +52,51 @@ ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
   --discovery="${file_discovery_url}"
 ```
 
----
-
-## Architectural Placement
-
-Academically this module belongs in the innermost layer of a cluster and is the only layer that knows which services the cluster profers. This layer is responsible for telling
-
-- the cluster config layer which AMI to use
-- the cluster config layer which ignition configuration (userdata) to bootstrap each node with
-- the network layer which ports traffic is allowed to flow through
-- the network layer which load balancer listeners should be configured
-
-There are **no Terraform resource statements** in this module and you'd expect that from something that solely provides node services configuration. It is completely separate both from infrastructure and or network components.
+When each cluster node wakes up, the above ETCD configuration sets up the key-value store and contacts peers. After that RabbitMQ is started and it uses its local etcd for peer discovery.
 
 ---
+
+### How does RabbitMQ know where ETCD is?
+
+Looking above it is not obvious where RabbitMQ is given etcd's host url.
+
+The answer is in two places. The **[rabbitmq.conf file](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf)** and this switch **`--network host`** in the docker run command.
+
+
+#### [rabbitmq.conf file](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf)
+
+```conf
+cluster_formation.peer_discovery_backend = rabbit_peer_discovery_etcd
+cluster_formation.etcd.host = localhost
+```
+
+Rabbit is told that the etcd host url is **`localhost`** (using default port 2379). The docker command started up RabbitMQ using the host's network which is how localhost is the correct place.
+
+Piggy backing off the host's network is why we did not need to publish RabbitMQ ports like **`15672`**.
+
+
 
 ## Usage
 
 Copy this into a file and then run **`terraform init`** and **`terraform apply -auto-approve`** and out comes the ignition config.
 
 ```hcl
-module etcd-ignition-config
+module rabbitmq-ignition-config
 {
-    source        = "github.com/devops4me/terraform-ignition-etcd-config"
+    source        = "github.com/devops4me/terraform-ignition-rabbitmq-config"
     in_node_count = 6
 }
 
-output etcd_ignition_config
+output rabbitmq_ignition_config
 {
-    value = "${ module.etcd-ignition-config.out_ignition_config }"
+    value = "${ module.rabbitmq-ignition-config.out_ignition_config }"
 }
 ```
 
 Your node is configured when you feed the output into the user data field of either an EC2 instance (**[fixed size cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size)**) or a launch configuration (**[auto-scaling cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-auto-scale)**).
 
-## Module Inputs
-
-## Module Outputs
 
 ---
-
 
 
 ## RabbitMQ User through Docker
