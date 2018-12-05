@@ -20,5 +20,5 @@ output out_ignition_config
 
 output out_rmq_password
 {
-    value = "${ random_string.user_password.result }"
+    value = "${ random_string.password.result }"
 }

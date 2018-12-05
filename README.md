@@ -18,9 +18,9 @@ ExecStart=/usr/bin/docker run \
     --detach        \
     --name rabbitmq \
     --network host  \
-    --env RABBITMQ_ERLANG_COOKIE="${erlang_cookie}" \
-    --env RABBITMQ_DEFAULT_USER="apollo"   \
-    --env RABBITMQ_DEFAULT_PASS="p455w0rd" \
+    --env RABBITMQ_ERLANG_COOKIE = "${ erlang_cookie }" \
+    --env RABBITMQ_DEFAULT_USER  = "${ rbmq_username }" \
+    --env RABBITMQ_DEFAULT_PASS  = "${ rbmq_password }" \
     devops4me/rabbitmq-3.7
 
 [Install]
@@ -29,7 +29,7 @@ WantedBy=multi-user.target
 
 Each node will be bootstrapped using **Ignition** to run the **[RabbitMQ 3.7 docker container](https://github.com/devops4me/rabbitmq-3.7/blob/master/Dockerfile)** after CoreOS ETCD 3 has been installed.
 
-You replace the **`apollo`** username and **`p455w0rd`** password, and the **clustering (erlang) cookie**, with placeholders for dynamic configuration.
+The module swallows a username and **spits out an alphanumeric password**. The combination can be used to log into any node in the cluster or via the load balancer.
 
 ---
 
