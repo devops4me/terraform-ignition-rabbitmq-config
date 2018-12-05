@@ -73,7 +73,8 @@ data template_file rabbitmq
 
     vars
     {
-        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
+        rabbit_cookie = "BCDEFGHIJKLMNOPQRSTUVWXY"
+##########        rabbit_cookie = "${ random_string.rabbit_cookie.result }"
     }
 }
 
@@ -81,19 +82,18 @@ data template_file rabbitmq
 /*
  | --
  | -- To join a cluster RabbitMQ nodes ask each other whether
- | -- their "erlang cookies" match and they will because the
+ | -- their "erlang cookies" match - and they will because the
  | -- value is drawn from the result of this resource.
  | --
- | -- We have configured the value of this cookie to
- | --
- | --   a) contain 16 alphanumeric characters
- | --   b) no special characters (nor spaces)
- | --   c) employ both uppercase and lowercase
+ | -- The cookie will hold 24 (and only 24) upper case letters.
  | --
 */
 resource random_string rabbit_cookie
 {
-    length = 16
+    length  = 24
+    upper   = true
+    lower   = false
+    number  = false
     special = false
 }
 

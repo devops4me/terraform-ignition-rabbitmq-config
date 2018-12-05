@@ -146,25 +146,23 @@ Terraform tells you that it is using
 
 ## Troubleshoot | Information Gathering
 
+Replace the string **`rabbitmq`** with the name of your service in these systemd information gathering commands.
+
 ```bash
 docker ps -a                              # Is our container running?
-journalctl --unit etcd-member.service     # Examine the ETCD 3 service
 journalctl --unit rabbitmq.service        # Examine (say) rabbitmq.service
 journalctl --identifier=ignition --all    # look at the ignition logs
 systemctl list-unit-files                 # Is your service in this list?
 journalctl --unit coreos-metadata.service # Examine the fetched metadata
 journalctl --unit docker.socket           # Did docker start okay?
 journalctl --unit network-online.target   # Did the network come onlie?
-cat /etc/systemd/system/<<name>>.service  # Print the systemd unit file
+cat /etc/systemd/system/rabbitmq.service  # Print the systemd unit file
 systemctl cat rabbitmq                    # Print the systemd unit file
 systemctl status rabbitmq                 # Is service enabled or what?
 docker logs rabbitmq                      # Logs please (if docker run)
+journalctl --unit etcd-member.service     # Examine the ETCD 3 service
 ```
 
-
-
-cat /etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
-cat /etc/systemd/system/rabbitmq.service.d/20-clct-rabbitmq-member.conf
 
 
 ## Troubleshoot | Validate your service unit file
@@ -277,6 +275,18 @@ If you look at blahblahblah.service with **`journalctl --unit blahblahblah.servi
 **Actually it means the service did not exist or was not found!**
 
 
+
+## Troubleshoot | Failed Units Banner
+
+CoreOS and most Linux distros publish a banner if and when service failed to instantiate. When you SSH in you are greeted like this.
+
+```
+Failed Units: 1
+  rabbitmq.service
+```
+
+A quick glance names the services that have let you down.
+
 ---
 
 
@@ -285,6 +295,13 @@ docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloako
 docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags apolloakora administrator"
 docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / apolloakora ".*" ".*" ".*"'
 ```
+
+```bash
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl add_user apolloakora abc123"
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c "rabbitmqctl set_user_tags apolloakora administrator"
+ExecStartPost=/usr/bin/docker exec --interactive --tty rabbitmq bash -c 'rabbitmqctl set_permissions -p / apolloakora ".*" ".*" ".*"'
+```
+
 
 -------------------------------------------------
 Think abou the below ports
