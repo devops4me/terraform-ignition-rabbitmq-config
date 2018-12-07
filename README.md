@@ -84,7 +84,7 @@ Your node is configured when you feed the output into the user data field of eit
 ---
 
 
-## How does RabbitMQ find ETCD?
+## How does RabbitMQ find etcd?
 
 It is not immediately obvious how RabbitMQ is given its etcd's host url. The answer lies in
 
