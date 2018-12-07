@@ -1,4 +1,8 @@
 
+#### The igintion json content coming out of this module goes into the user data field of either an ec2 instances or a launch configurations.
+
+---
+
 # RabbitMQ 3.7 Cluster Configuration | ETCD Peer Discovery
 
 Deploying an **N node RabbitMQ 3.7 cluster** is extremely simple when you combine a modular Terraform design, an **etcd peer discovery backend** and two **systemd unit files** that are converted to Ignition json.
@@ -56,25 +60,6 @@ When each cluster node wakes up, the above ETCD configuration sets up the key-va
 
 ---
 
-## How does RabbitMQ know where ETCD is?
-
-Looking above it is not obvious where RabbitMQ is given etcd's host url.
-
-The answer is in two places. The **[rabbitmq.conf file](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf)** and this switch **`--network host`** in the docker run command.
-
-
-### the [rabbitmq.conf](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf) file
-
-```ini
-cluster_formation.peer_discovery_backend = rabbit_peer_discovery_etcd
-cluster_formation.etcd.host = localhost
-```
-
-Rabbit is told that the etcd host url is **`localhost`** (using default port 2379). The docker command started up RabbitMQ using the host's network which is how localhost is the correct place.
-
-Piggy backing off the host's network is why we did not need to publish RabbitMQ ports like **`15672`**.
-
-
 
 ## Usage
 
@@ -94,6 +79,29 @@ output rabbitmq_ignition_config
 ```
 
 Your node is configured when you feed the output into the user data field of either an EC2 instance (**[fixed size cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size)**) or a launch configuration (**[auto-scaling cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-auto-scale)**).
+
+
+---
+
+
+## How does RabbitMQ find ETCD?
+
+It is not immediately obvious how RabbitMQ is given its etcd's host url. The answer lies in
+
+1. the **[rabbitmq.conf file](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf)** and
+1. the **`--network host`** switch in docker run
+
+
+### the [rabbitmq.conf](https://github.com/devops4me/rabbitmq-3.7/blob/master/rabbitmq.conf) file
+
+```ini
+cluster_formation.peer_discovery_backend = rabbit_peer_discovery_etcd
+cluster_formation.etcd.host = localhost
+```
+
+Rabbit is told that the etcd host url is **`localhost`** (using default port 2379). The docker command started up RabbitMQ using the host's network which is how localhost is the correct place.
+
+Piggy backing off the host's network is why we did not need to publish RabbitMQ ports like **`15672`**.
 
 
 ---
