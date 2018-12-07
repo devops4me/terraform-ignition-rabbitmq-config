@@ -1,5 +1,5 @@
 
-#### The igintion json content coming out of this module goes into the user data field of either an ec2 instances or a launch configurations.
+#### The igintion json content coming out of this module goes into the *user data* field of either an [ec2 instance](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size/blob/master/ec2.cluster.fixed.size-main.tf) or a launch configuration.
 
 ---
 
