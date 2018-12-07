@@ -1,9 +1,9 @@
 
-#### The igintion json content coming out of this module goes into the *user data* field of either an [ec2 instance](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size/blob/master/ec2.cluster.fixed.size-main.tf) or a launch configuration.
+#### The igintion json content coming out of here goes into the *user data* of either an [ec2 instance](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size/blob/master/ec2.cluster.fixed.size-main.tf) or a launch configuration.
 
 ---
 
-# RabbitMQ 3.7 Cluster Configuration | ETCD Peer Discovery
+# RabbitMQ 3.7 Cluster Ignition | etcd v3 peer discovery
 
 Deploying an **N node RabbitMQ 3.7 cluster** is extremely simple when you combine a modular Terraform design, an **etcd peer discovery backend** and two **systemd unit files** that are converted to Ignition json.
 
