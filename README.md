@@ -153,6 +153,7 @@ Replace the string **`rabbitmq`** with the name of your service in these systemd
 ```bash
 docker ps -a                              # Is our container running?
 docker logs rabbitmq                      # Tell me the docker viewpoint?
+etcdctl cluster-health                 # Health of etcd cluster nodes?
 journalctl --unit rabbitmq.service        # Examine (say) rabbitmq.service
 journalctl --identifier=ignition --all    # look at the ignition logs
 systemctl list-unit-files                 # Is your service in this list?
@@ -160,11 +161,37 @@ journalctl --unit coreos-metadata.service # Examine the fetched metadata
 journalctl --unit docker.socket           # Did docker start okay?
 journalctl --unit network-online.target   # Did the network come onlie?
 cat /etc/systemd/system/rabbitmq.service  # Print the systemd unit file
-systemctl cat rabbitmq                    # Print the systemd unit file
+sudo systemctl start rabbitmq         # Will service startup fine?
 systemctl status rabbitmq                 # Is service enabled or what?
+systemctl cat rabbitmq                    # Print the systemd unit file
 journalctl --unit etcd-member.service     # Examine the ETCD 3 service
 etcdctl ls / --recursive                  # list the keys that etcd has
 ```
+
+## Troubleshoot | systemd dependency failure
+
+If these systemd logs **`Dependency failed for`** and **`Job rabbitmq.service/start failed with result 'dependency'`** appear after the command **`journalctl --unit rabbitmq.service`** (whatever your service is), you have a systemd dependency failure.
+
+```
+-- Logs begin at Thu 2018-12-13 15:13:29 UTC, end at Thu 2018-12-13 15:32:11 UTC. --
+Dec 13 15:14:51 ip-10-66-8-108 systemd[1]: Dependency failed for RabbitMQ Node with ETCD Peer Discovery.
+Dec 13 15:14:51 ip-10-66-8-108 systemd[1]: rabbitmq.service: Job rabbitmq.service/start failed with result 'dependency'.
+```
+
+To fix this issue you should ensure that
+
+- every systemd unit file ends with **`WantedBy=multi-user.target`** under **`[Install]`**
+- **`Restart=always`** and **`RestartSec=10`** is placed under the **`[Service]`** section
+
+
+[Install]
+WantedBy=multi-user.target
+
+Restart=always
+RestartSec=3
+
+
+---
 
 
 

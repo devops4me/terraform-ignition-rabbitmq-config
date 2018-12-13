@@ -12,3 +12,6 @@ ExecStart=/usr/lib/coreos/etcd-wrapper $ETCD_OPTS \
   --initial-advertise-peer-urls="http://$${COREOS_EC2_IPV4_LOCAL}:2380" \
   --advertise-client-urls="http://$${COREOS_EC2_IPV4_LOCAL}:2379" \
   --discovery="${file_discovery_url}"
+
+[Install]
+WantedBy=multi-user.target
