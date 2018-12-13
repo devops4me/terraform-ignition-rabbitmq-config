@@ -146,6 +146,31 @@ WantedBy=multi-user.target
 ---
 
 
+Restart=always
+RestartSec=10s
+Type=notify
+NotifyAccess=all
+
+
+---
+
+
+## The [Timer] Section
+
+Timer units are used to schedule tasks to operate at a specific time or after a certain delay. This unit type replaces or supplements some of the functionality of the cron and at daemons. An associated unit must be provided which will be activated when the timer is reached.
+
+The [Timer] section of a unit file can contain some of the following directives:
+
+OnActiveSec=: This directive allows the associated unit to be activated relative to the .timer unit's activation.
+OnBootSec=: This directive is used to specify the amount of time after the system is booted when the associated unit should be activated.
+OnStartupSec=: This directive is similar to the above timer, but in relation to when the systemd process itself was started.
+OnUnitActiveSec=: This sets a timer according to when the associated unit was last activated.
+OnUnitInactiveSec=: This sets the timer in relation to when the associated unit was last marked as inactive.
+
+
+---
+
+
 ## Troubleshoot | Information Gathering
 
 Replace the string **`rabbitmq`** with the name of your service in these systemd information gathering commands.

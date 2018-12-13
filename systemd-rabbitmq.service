@@ -1,12 +1,12 @@
 
 [Unit]
 Description=RabbitMQ Node with ETCD Peer Discovery
-After=docker.socket etcd-member.service
 Requires=docker.socket etcd-member.service
 
+[Timer]
+OnStartupSec=90
+
 [Service]
-Restart=always
-RestartSec=7
 ExecStart=/usr/bin/docker run \
     --detach        \
     --name rabbitmq \
