@@ -22,3 +22,13 @@ output out_rmq_password
 {
     value = "${ random_string.password.result }"
 }
+
+
+### ##################### ###
+### [[output]] out_ami_id ###
+### ##################### ###
+
+output out_ami_id
+{
+    value = "${ module.coreos-ami-id.out_ami_id }"
+}

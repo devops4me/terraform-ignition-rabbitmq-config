@@ -103,14 +103,14 @@ data template_file etcd3
 /*
  | --
  | -- The RabbitMQ user password is generated to contain
- | -- 24 alphanumeric characters and no specials.
+ | -- 20 alphanumeric characters and no specials.
  | -- For production this password should be ingested by
  | -- your safe through Terraform's output command.
  | --
 */
 resource random_string password
 {
-    length  = 24
+    length  = 20
     upper   = true
     lower   = true
     number  = true
@@ -149,4 +149,16 @@ resource random_string erlang_cookie
 data external url
 {
     program = [ "python", "${path.module}/etcd-discovery-url.py", "${ var.in_node_count }" ]
+}
+
+
+/*
+ | --
+ | -- This module dynamically acquires the HVM CoreOS AMI ID for the region that
+ | -- this infrastructure is built in (specified by the AWS credentials in play).
+ | --
+*/
+module coreos-ami-id
+{
+    source = "github.com/devops4me/terraform-aws-coreos-ami-id"
 }
