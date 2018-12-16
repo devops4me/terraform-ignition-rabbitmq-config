@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-# -----------------------------------------------------------------------------------------------
-# https://github.com/devops4me/terraform-ignition-etcd-config/blob/master/etcd-discovery-url.py
-# -----------------------------------------------------------------------------------------------
+# <<- -------------------------------------------------------------------------------- ->>
+# <<- This script retrieves an etcd peer discovery url for a stated quantity of nodes. ->>
+# <<- -------------------------------------------------------------------------------- ->>
 #
 # Here are the important items to note before running or
 # when trouble-shooting this script.
@@ -26,9 +26,12 @@
 #
 #  [7] - Example Command and Output
 #
-#          $ ./etcd-discovery-url.py 3
-#          {"etcd_discovery_url": "https://discovery.etcd.io/a660b68aa151605f0ed32807b4be165f"}
+#    $ ./etcd-discovery-url.py 3
+#    {"etcd_discovery_url": "https://discovery.etcd.io/a660b68aa151605f0ed32807b4be165f"}
 
 import requests, json, sys
 response = requests.get( 'https://discovery.etcd.io/new', params={ 'size' : sys.argv[1] } )
 print json.dumps( { "etcd_discovery_url" : response.text } )
+
+# <<- -------------------------------------------------------------------------------- ->>
+# <<- -------------------------------------------------------------------------------- ->>

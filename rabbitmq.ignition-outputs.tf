@@ -15,6 +15,16 @@ output out_ignition_config
 
 
 ### ########################### ###
+### [[output]] out_rmq_username ###
+### ########################### ###
+
+output out_rmq_username
+{
+    value = "${ var.in_rmq_username }"
+}
+
+
+### ########################### ###
 ### [[output]] out_rmq_password ###
 ### ########################### ###
 
