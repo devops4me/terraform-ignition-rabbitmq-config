@@ -1,5 +1,5 @@
 
-#### The igintion json content coming out of here goes into the *user data* of either an [ec2 instance](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size/blob/master/ec2.cluster.fixed.size-main.tf) or a launch configuration.
+#### The igintion json content coming out of here goes into the *user data* of either an [ec2 instance](https://github.com/devops4me/terraform-aws-ec2-instance-cluster/blob/master/ec2.instances-main.tf) or a launch configuration.
 
 ---
 
@@ -78,7 +78,7 @@ output rabbitmq_ignition_config
 }
 ```
 
-Your node is configured when you feed the output into the user data field of either an EC2 instance (**[fixed size cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-fixed-size)**) or a launch configuration (**[auto-scaling cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-auto-scale)**).
+Your node is configured when you feed the output into the user data field of either an EC2 instance (**[fixed size cluster](https://github.com/devops4me/terraform-aws-ec2-instance-cluster)**) or a launch configuration (**[auto-scaling cluster](https://github.com/devops4me/terraform-aws-ec2-cluster-auto-scale)**).
 
 
 ---
