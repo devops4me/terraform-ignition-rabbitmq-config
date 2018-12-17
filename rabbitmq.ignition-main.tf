@@ -150,15 +150,3 @@ data external url
 {
     program = [ "python", "${path.module}/etcd-discovery-url.py", "${ var.in_node_count }" ]
 }
-
-
-/*
- | --
- | -- This module dynamically acquires the HVM CoreOS AMI ID for the region that
- | -- this infrastructure is built in (specified by the AWS credentials in play).
- | --
-*/
-module coreos-ami-id
-{
-    source = "github.com/devops4me/terraform-aws-coreos-ami-id"
-}
