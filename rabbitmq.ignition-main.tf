@@ -139,11 +139,61 @@ resource random_string erlang_cookie
 
 /*
  | --
- | -- Run a bash script which only contains a curl command to retrieve
- | -- the etcd discovery url from the service offered by CoreOS.
- | -- This is how to retrieve the URL from any command line.
+ | -- This external call depends on a shell being available that has
+ | -- the ubiquitous "echo" and "curl" commands.
  | --
- | --     $ curl https://discovery.etcd.io/new?size=3
+ | -- This python program returns a JSON formatted string to terraform
+ | -- that is similar to this one.
+ | --
+ | --   { "etcd_discovery_url" : "https://discovery.etcd.io/842f1290100359bbcaef7d4472fa67f1" }
+ | --
+ | --  ## ############ ##
+ | --  ## Sanity Check ##
+ | --  ## ############ ##
+ | --
+ | -- Why not mimic the json-ified url output with this command.
+ | --  ( Note => 7 is an intent to create a 7 node cluster )
+ | --
+ | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
+ | --
+*/
+    /*
+data external url
+{
+    program = [ 'sh', '-c', 'echo { \"etcd_discovery_url\" : \"$$(curl -s https://discovery.etcd.io/new?size=6)\" }' ]
+
+     | --
+     | -- #####################################################################
+     | --
+     | -- Bug ==== >> Terraform (at this time) returns this error when we
+     | -- attempt to interpolate with ${ var.in_node_count }
+     | --
+     | --    command "sh" produced invalid JSON: invalid character 'e'
+     | --
+     | -- The workaround is to pass a large value for size (17).
+     | --
+     | -- #####################################################################
+     | --
+
+#######    program = [ "sh", "-c", "echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\" }" ]
+}
+     */
+
+
+/*
+ | --
+ | -- This external call depends on a python program in the directory of
+ | -- this module called [ etcd-discovery-url.py ]
+ | --
+ | -- This python program returns a JSON formatted string to terraform
+ | -- that is similar to this one.
+ | --
+ | --   { "etcd_discovery_url" : "https://discovery.etcd.io/842f1290100359bbcaef7d4472fa67f1" }
+ | --
+ | -- You can mimic the json-ified url output using this command.
+ | --  ( Note => 7 is an intent to create a 7 node cluster )
+ | --
+ | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
  | --
 */
 data external url
