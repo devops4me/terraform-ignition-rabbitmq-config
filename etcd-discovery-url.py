@@ -29,7 +29,17 @@
 #    $ ./etcd-discovery-url.py 3
 #    {"etcd_discovery_url": "https://discovery.etcd.io/a660b68aa151605f0ed32807b4be165f"}
 
-import requests, json, sys
+
+import requests, json, sys, logging
+
+logging.basicConfig( filename = 'etcd3-discovery-url.log', level = logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%Y%m%d %I:%M:%S %p' )
+
+logging.info( '[etcd3-discovery-url.py] invoking script to grab an etcd discovery url.' )
+logging.info( 'The stated node count in the etcd cluster is [%s]' % ( sys.argv[1] ) )
+logging.info( 'The statement passed in is [[ %s ]]]' % ( sys.argv[2] ) )
+
+
+#### import requests, json, sys
 response = requests.get( 'https://discovery.etcd.io/new', params={ 'size' : sys.argv[1] } )
 print json.dumps( { "etcd_discovery_url" : response.text } )
 

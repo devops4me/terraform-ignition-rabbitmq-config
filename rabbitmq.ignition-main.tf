@@ -156,12 +156,19 @@ resource random_string erlang_cookie
  | --
  | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
  | --
+ | --
+ | -- The quadruple triple backslash double quotes \\\" ensure that
+ | -- echo is presented with backslash double quotes which in turn
+ | -- returns JSON compliant double quotes to Terraform.
+ | --
+ | -- The double dollar gives echo a single dollar to interpolate.
+ | --
 */
-    /*
 data external url
 {
-    program = [ 'sh', '-c', 'echo { \"etcd_discovery_url\" : \"$$(curl -s https://discovery.etcd.io/new?size=6)\" }' ]
+    program = [ "sh", "-c", "echo { \\\"etcd_discovery_url\\\" : \\\"$$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\\\" }" ]
 
+/*
      | --
      | -- #####################################################################
      | --
@@ -174,10 +181,10 @@ data external url
      | --
      | -- #####################################################################
      | --
-
+*/
 #######    program = [ "sh", "-c", "echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\" }" ]
 }
-     */
+
 
 
 /*
@@ -196,7 +203,9 @@ data external url
  | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
  | --
 */
+/*
 data external url
 {
-    program = [ "python", "${path.module}/etcd-discovery-url.py", "${ var.in_node_count }" ]
+    program = [ "python", "${path.module}/etcd-discovery-url.py", "${ var.in_node_count }", "echo { \\\"etcd_discovery_url\\\" : \\\"$$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\\\" }" ]
 }
+*/
