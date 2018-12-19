@@ -15,7 +15,8 @@ FROM ubuntu:18.04
 USER root
 
 RUN apt-get update && apt-get --assume-yes install -qq -o=Dpkg::Use-Pty=0 \
-      git             \
+      curl  \
+      git   \
       unzip
 
 # --->
