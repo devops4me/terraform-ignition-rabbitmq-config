@@ -140,12 +140,14 @@ resource random_string erlang_cookie
 /*
  | --
  | -- This external call depends on a shell being available that has
- | -- the ubiquitous "echo" and "curl" commands.
+ | -- the ubiquitous "echo" and "CUrl" commands. Every Linux distribution
+ | -- has echo and almost all have CUrl.
  | --
- | -- This python program returns a JSON formatted string to terraform
- | -- that is similar to this one.
+ | -- At the sharp end the program (command) returns a JSON formatted
+ | -- string to terraform that is structurally similar to this.
  | --
  | --   { "etcd_discovery_url" : "https://discovery.etcd.io/842f1290100359bbcaef7d4472fa67f1" }
+ | --
  | --
  | --  ## ############ ##
  | --  ## Sanity Check ##
@@ -157,6 +159,11 @@ resource random_string erlang_cookie
  | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
  | --
  | --
+ | --
+ | --  ## ############## ##
+ | --  ## echo explained ##
+ | --  ## ############## ##
+ | --
  | -- The quadruple triple backslash double quotes \\\" ensure that
  | -- echo is presented with backslash double quotes which in turn
  | -- returns JSON compliant double quotes to Terraform.
@@ -166,46 +173,10 @@ resource random_string erlang_cookie
 */
 data external url
 {
-    program = [ "sh", "-c", "echo { \\\"etcd_discovery_url\\\" : \\\"$$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\\\" }" ]
-
-/*
-     | --
-     | -- #####################################################################
-     | --
-     | -- Bug ==== >> Terraform (at this time) returns this error when we
-     | -- attempt to interpolate with ${ var.in_node_count }
-     | --
-     | --    command "sh" produced invalid JSON: invalid character 'e'
-     | --
-     | -- The workaround is to pass a large value for size (17).
-     | --
-     | -- #####################################################################
-     | --
-*/
-#######    program = [ "sh", "-c", "echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\" }" ]
+    program =
+    [
+        "sh",
+        "-c",
+        "echo { \\\"etcd_discovery_url\\\" : \\\"$$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\\\" }"
+    ]
 }
-
-
-
-/*
- | --
- | -- This external call depends on a python program in the directory of
- | -- this module called [ etcd-discovery-url.py ]
- | --
- | -- This python program returns a JSON formatted string to terraform
- | -- that is similar to this one.
- | --
- | --   { "etcd_discovery_url" : "https://discovery.etcd.io/842f1290100359bbcaef7d4472fa67f1" }
- | --
- | -- You can mimic the json-ified url output using this command.
- | --  ( Note => 7 is an intent to create a 7 node cluster )
- | --
- | --    echo { \"etcd_discovery_url\" : \"$(curl -s https://discovery.etcd.io/new?size=7)\" }
- | --
-*/
-/*
-data external url
-{
-    program = [ "python", "${path.module}/etcd-discovery-url.py", "${ var.in_node_count }", "echo { \\\"etcd_discovery_url\\\" : \\\"$$(curl -s https://discovery.etcd.io/new?size=${ var.in_node_count })\\\" }" ]
-}
-*/
