@@ -8,33 +8,15 @@ FROM ubuntu:18.04
 
 
 # --->
-# ---> Assume the root user and install git, terraform,
-# ---> and pythonic tools both for retrieving the CoreOS
-# ---> AMI ID and the CoreOS etcd discovery url.
+# ---> As root install git and terraform to test
+# ---> this infrastructure module.
 # --->
 
 USER root
 
 RUN apt-get update && apt-get --assume-yes install -qq -o=Dpkg::Use-Pty=0 \
-      curl            \
       git             \
-      jq              \
-      python-pip      \
-      build-essential \
-      libssl-dev      \
-      libffi-dev      \
-      python-dev      \
-      tree            \
       unzip
-
-
-# --->
-# ---> The python script (ran by Terraform) for pulling
-# ---> down an etcd cluster discovery url needs a REST API
-# ---> package called requests.
-# --->
-RUN pip install requests
-
 
 # --->
 # ---> Install the Terraform binary.
